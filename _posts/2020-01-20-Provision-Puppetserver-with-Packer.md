@@ -3,10 +3,10 @@ layout: post
 title:  "Provision Puppetserver with Packer"
 date:   2020-01-01
 image: /images/posts/puppet.jpg
-tags: [puppet, devops, centos 7,packer,kickstart,openssl,puppetserver,esxi,how to]
+tags: [puppet, devops,centos,packer,kickstart,openssl,puppetserver,esxi,how to]
 ---
 
-When I left Puppet a year ago I decided to move off of the [Puppet Enterprise](https://puppet.com/products/puppet-enterprise/) Install I had been upgrading throughout my [7 year tenure](https://www.linkedin.com/in/acidprime/) at Puppet.  I realized I didn't need to keep up to date with the latest commercial features anymore. It gave me a long over due opportunity to setup a bare bones puppetserver. I try to use the best tools for the job and Puppet is normally one of the best configuration management solutions when you use it right. Puppet is thus one of the first servers I provision. Given its central role Puppet itself needs to be easily automated and upgraded over time. Frankly this is something most admins dont do enough of. In this how to, I will walk you through how I provision puppet server with ESXI and Packer.
+When I left Puppet a year ago I decided to move off of the [Puppet Enterprise](https://puppet.com/products/puppet-enterprise/) Install I had been upgrading throughout my [7 year tenure](https://www.linkedin.com/in/acidprime/) at Puppet.  I realized I didn't need to keep up to date with the latest commercial features anymore. It gave me a long over due opportunity to setup a bare bones puppetserver. I try to use the best tools for the job and Puppet is normally one of the best configuration management solutions when you use it right. Puppet is thus one of the first servers I provision. Given its central role Puppet itself needs to be easily automated and upgraded over time. Frankly this is something most admins dont do enough of. In this how to, I will walk you through how I provision puppet server with [Packer](https://learn.hashicorp.com/packer).
 
 <!--more-->
 
@@ -38,7 +38,7 @@ When I left Puppet a year ago I decided to move off of the [Puppet Enterprise](h
 
 I started with a Centos 7 base for my installation as Puppet needs to be realtivly stable given most of the configurations flow from it. Centos is in my expierence the most common installation candidate in the puppet ecosystem.
 
-> Given the recent Centos news I may revisit this choice in the future. But I sometimes resolve to let things be somewhat static when they are this central.
+> Given the recent Centos news I may revisit this choice in the future. But I sometimes resolve to let things be somewhat static when they are this central especially in a home lab.
 
 I will cover migrating certificate authorities to [Vault](https://www.hashicorp.com/products/vault) in a future article, however to get started with we need to generate a Certificate Authority PEM puppet server will use to sign its own and agent certificates.
 
@@ -54,7 +54,7 @@ mkdir -p /etc/puppetlabs/puppet/ssl/
 mount -t nfs synology.homeops.tech:/volume1/ssl /etc/puppetlabs/puppet/ssl/
 ```
 
-> If this was production you should would want to consider the security implications what machines can access your private keys. I do want to migrate to Kerberos in the future as well, but most of the core infrastructure I use builds the next infrasturcture and thus needs to be solid and simple.
+> If this was production you should would want to consider the security implications e.g. what machines can access your private keys. I do want to migrate to Kerberos in the future as well, but most of the core infrastructure I use builds the next infrasturcture and thus needs to be solid and simple.
 
 Once your NFS export is mounted at the default "ssldir" for puppetserver you can change directories and generate a new certificate authority. First though I need to generate an openssl configuration.
 
@@ -78,7 +78,7 @@ crl               = $dir/ca_crl.pem
 unique_subject    = no
 default_md        = sha1
 default_days    = 365
-default_crl_days= 30
+default_crl_days= 365 
 preserve        = no
 
 [req]
@@ -137,7 +137,7 @@ openssl ca \
 
 I increment the CA serial as the CA ad puppet server will both be in the first few slots.My long term plans are to make this an intermediate CA with some PKC11 automation and a Nitro Key I'm planning on using for Vault. check back here for updates.
 
-> This script is also useful for regenerating your CA when you decide to reset it for testing. Be aware you must resign your agent certificates when you do so.
+> This script is also useful for regenerating your CA when you decide to reset it for testing. Please note the `rm -rf` commands in the begining of the script 
 
 ## Install Puppetserver
 
@@ -200,8 +200,9 @@ And your done. From here all additional management can flow from your version co
 
 ## Deploy Server with Packer
 
-Here is an example packer file that can be used with esxi. I normally leave the build running for testing:
-  
+Here is an example packer file that can be used with esxi. I normally leave the build running for at the end:
+
+
 `puppet.json`
   
 ```json
@@ -268,6 +269,17 @@ mkdir floppy && cd floppy
 vim puppet.cfg
 ```
 
+For testing, you can fire up a local http server temporarily.
+cd to the directory where this ks.cfg file resides and run the following:
+`python -m SimpleHTTPServer`
+You don't have to restart the server every time you make changes.  Python
+will reload the file from disk every time.  As long as you save your changes
+they will be reflected in the next HTTP download.  Then to test with
+a PXE boot server, enter the following on the PXE boot prompt:
+`   > linux text ks=http://<your_ip>:8000/ks.cfg`
+
+Once your kickstart file is ready you can load it into the virtual floppy drive.
+
   
 `
 puppet.cfg
@@ -276,20 +288,6 @@ puppet.cfg
 
 ```shell
 # CentOS 7.x kickstart file - puppet.cfg
-#
-# For more information on kickstart syntax and commands, refer to the
-# CentOS Installation Guide:
-# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Installation_Guide/sect-kickstart-syntax.html
-#
-# For testing, you can fire up a local http server temporarily.
-# cd to the directory where this ks.cfg file resides and run the following:
-#    $ python -m SimpleHTTPServer
-# You don't have to restart the server every time you make changes.  Python
-# will reload the file from disk every time.  As long as you save your changes
-# they will be reflected in the next HTTP download.  Then to test with
-# a PXE boot server, enter the following on the PXE boot prompt:
-#    > linux text ks=http://<your_ip>:8000/ks.cfg
-
 # Required settings
 lang en_US.UTF-8
 keyboard us
@@ -316,15 +314,19 @@ firstboot --disabled
 selinux --permissive
 
 reboot
-network --onboot yes --device ens33 --bootproto=static --ip=192.168.53.53 --netmask=255.255.255.0 --gateway=192.168.53.1 --nameserver=192.168.53.60 --nameserver=192.168.53.70 --noipv6 --hostname=puppet.homeops.tech
-
+network --onboot yes --device ens33 \
+  --bootproto=static \
+  --ip=192.168.53.53 \
+  --netmask=255.255.255.0 \
+  --gateway=192.168.53.1 \
+  --nameserver=192.168.53.60 \
+  --nameserver=192.168.53.70 \
+  --noipv6 \
+  --hostname=puppet.homeops.tech
 
 %packages --nobase --ignoremissing --excludedocs
 # packer needs this to copy initial files via scp
 openssh-clients
-# Prerequisites for installing VMware Tools or VirtualBox guest additions.
-# Put in kickstart to ensure first version installed is from install disk,
-# not latest from a mirror.
 @base
 kernel-headers
 kernel-devel
@@ -338,31 +340,8 @@ dkms
 patch
 net-tools
 git
-#nfs-utils
-#nfs4-acl-tools
-#portmap
-# Core selinux dependencies installed on 7.x, no need to specify
-# Other stuff
 sudo
 nfs-utils
--fprintd-pam
--intltool
-
-# unnecessary firmware
--aic94xx-firmware
--atmel-firmware
--b43-openfwwf
--bfa-firmware
--ipw*-firmware
--irqbalance
--ivtv-firmware
--iwl*-firmware
--libertas-usb8388-firmware
--ql*-firmware
--rt61pci-firmware
--rt73usb-firmware
--xorg-x11-drv-ati-firmware
--zd1211-firmware
 %end
 
 %post --log=/var/log/post-install.log
@@ -379,10 +358,6 @@ echo "Setting up ifcfg-ens33"
 
 for nic in /etc/sysconfig/network-scripts/ifcfg-eth*; do sed -i /HWADDR/d $nic; done
 sed -i -e '/#UseDNS yes/a UseDNS no' /etc/ssh/sshd_config
-mkdir -p /etc/puppetlabs/puppet/ssl
-
-
-# I live in the past sometimes 
 yum -y remove networkmanager
 
 # Configure Synology LDAP
@@ -393,9 +368,6 @@ echo "%packer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/packer
 chmod 0440 /etc/sudoers.d/packer
 cp /etc/sudoers /etc/sudoers.orig
 sed -i "s/^\(.*requiretty\)$/#\1/" /etc/sudoers
-
-# keep proxy settings through sudo
-echo 'Defaults env_keep += "HTTP_PROXY HTTPS_PROXY FTP_PROXY RSYNC_PROXY NO_PROXY"' >> /etc/sudoers
 
 # Configure Puppet
 mkdir -p /etc/puppetlabs/puppet/ssl
@@ -408,7 +380,8 @@ echo 'mount -t nfs synology.homeops.tech:/volume1/ssl /etc/puppetlabs/puppet/ssl
 echo 'yum clean all' >> /etc/rc.d/rc.local
 echo 'yum update' >> /etc/rc.d/rc.local
 
-echo '!!!!!SNIPPETS ABOVE!!!!!'>> /etc/rc.d/rc.local
+echo '!!!!!Replace wirh your ca.sh!!!!!'>> /etc/rc.d/rc.local
+echo '!!!!!Replace wirh your puppetserver.sh!!!!!'>> /etc/rc.d/rc.local
 
 echo '/usr/bin/rm -rf /etc/rc.d/rc.local' >> /etc/rc.d/rc.local
 %end
