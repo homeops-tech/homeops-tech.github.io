@@ -71,7 +71,7 @@ Once your NFS export is mounted at the default "ssldir" for puppetserver you can
 
 {% gist 3c673dfebd5a0b309cbc22095da348e7 ca.sh %}
 
-I increment the CA serial as the CA ad puppet server will both be in the first few slots.My long term plans are to make this an intermediate CA with some PKC11 automation and a Nitro Key I'm planning on using for Vault. check back here for updates.
+I increment the CA serial as the CA ad puppet server will both be in the first few slots.My long term plans are to make this an intermediate CA with some PKC11 automation and a [Nitro Key](https://shop.nitrokey.com/shop/product/nk-pro-2-nitrokey-pro-2-3) I'm planning on using for Vault. check back here for updates.
 
 > This script is also useful for regenerating your CA when you decide to reset it for testing. Please note the `rm -rf` commands in the begining of the script 
 
