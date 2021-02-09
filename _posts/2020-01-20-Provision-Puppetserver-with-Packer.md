@@ -3,7 +3,7 @@ layout: post
 title:  "Provision Puppetserver with Packer"
 date:   2020-01-01
 image: /images/posts/puppet.jpg
-tags: [puppet, devops,centos,packer,kickstart,openssl,puppetserver,esxi,how to]
+tags: [puppet,devops,packer,kickstart,openssl,puppetserver,esxi,how to]
 ---
 
 When I left Puppet a year ago I decided to move off of the [Puppet Enterprise](https://puppet.com/products/puppet-enterprise/) Install I had been upgrading throughout my [7 year tenure](https://www.linkedin.com/in/acidprime/) at Puppet.  I realized I didn't need to keep up to date with the latest commercial features anymore. It gave me a long over due opportunity to setup a bare bones puppetserver. I try to use the best tools for the job and Puppet is normally one of the best configuration management solutions when you use it right. Puppet is thus one of the first servers I provision. Given its central role Puppet itself needs to be easily automated and upgraded over time. Frankly this is something most admins dont do enough of. In this how to, I will walk you through how I provision puppet server with [Packer](https://learn.hashicorp.com/packer).
