@@ -58,82 +58,18 @@ mount -t nfs synology.homeops.tech:/volume1/ssl /etc/puppetlabs/puppet/ssl/
 
 Once your NFS export is mounted at the default "ssldir" for puppetserver you can change directories and generate a new certificate authority. First though I need to generate an openssl configuration.
 
+  
 `openssl.conf`
+  
 
-```shell
-[ default ]
-ca                      = root-ca
+{% gist 3c673dfebd5a0b309cbc22095da348e7 openssl.conf %}
 
-[ ca ]
-default_ca              = root_ca
-
-[ root_ca ]
-dir               = /etc/puppetlabs/puppet/ssl/ca
-certs             = $dir/certs
-serial            = $dir/serial
-database          = $dir/inventory.txt
-private_key       = $dir/ca_key.pem
-certificate       = $dir/ca_crt.pem
-crl               = $dir/ca_crl.pem
-unique_subject    = no
-default_md        = sha1
-default_days    = 365
-default_crl_days= 365 
-preserve        = no
-
-[req]
-default_bits = 2048
-prompt = no
-distinguished_name = req_distinguished_name
-req_extensions     = req_ext
-
-[ req_distinguished_name ]
-CN = "Puppet CA: puppet.homeops.tech"
-
-[v3_req]
-# Extensions to add to a certificate request
-basicConstraints = CA:FALSE
-keyUsage = digitalSignature, keyEncipherment
-subjectAltName = @alt_names
-
-[ req_ext ]
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1   = puppet.homeops.tech
-DNS.2   = puppet
-
-```
 
   
 `ca.sh`
   
 
-```shell
-#!/bin/bash -x
-rm -rf ca
-rm -rf certs
-mkdir -p ca
-openssl genrsa -out ca/ca_key.pem 2048
-openssl rsa -in ca/ca_key.pem -pubout -out ca/ca_pub.pem
-openssl req \
-  -x509 \
-  -new \
-  -nodes \
-  -key ca/ca_key.pem \
-  -sha256 \
-  -days 3000 \
-  -out ca/ca_crt.pem \
-  -config openssl.conf
-touch ca/inventory.txt
-echo "03" > ca/serial
-openssl ca \
-  -create_serial \
-  -config openssl.conf \
-  -crldays 1460 \
-  -gencrl \
-  -out ca/ca_crl.pem
-```
+{% gist 3c673dfebd5a0b309cbc22095da348e7 ca.sh %}
 
 I increment the CA serial as the CA ad puppet server will both be in the first few slots.My long term plans are to make this an intermediate CA with some PKC11 automation and a Nitro Key I'm planning on using for Vault. check back here for updates.
 
@@ -144,19 +80,10 @@ I increment the CA serial as the CA ad puppet server will both be in the first f
 Once the certificate directory and files exists, all we need is to install Puppet server.
 
   
-  `puppetserver.sh`
+`puppetserver.sh`
   
 
-```
-#!/bin/bash -x
-wget https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
-rpm -Uvh puppet6-release-el-7.noarch.rpm
-yum install puppet -y
-yum install puppetserver -y
-chown -R  puppet:puppet /etc/puppetlabs/puppet/ssl/ca
-puppetserver ca setup
-systemctl start puppetserver
-```
+{% gist 3c673dfebd5a0b309cbc22095da348e7 puppetserver.sh %}
 
 > I'm not installing PuppetDB here as frankly I just don't need it at this scale, I can still use flat files to use storeconfigs out of the box.
 
@@ -178,22 +105,11 @@ git:
 
 Using the `r10k.yaml` above you can bootstrap the inital control repo on your puppet server. This will download all environments (branches) and modules specified in your Puppetfile. I normally have Puppet managed by Puppet in most case and so I also perform a puppet run at the end. There are some chicken before the egg issues you might encounter like hiera, so testing this from scratch is a good idea.
 
-```shell
-#!/bin/bash -x
-yum install git -y
-yum update -y nss curl libcurl
-/opt/puppetlabs/puppet/bin/gem install r10k
-mkdir -p ~/.ssh
-ssh-keyscan github.com > ~/.ssh/known_hosts
-cp /etc/puppetlabs/puppet/ssl/id_rsa ~/.ssh/id_rsa
-/opt/puppetlabs/puppet/bin/r10k \
-  deploy environment \
-  -p \
-  -v debug2 \
-  --color \
-  -c /etc/puppetlabs/puppet/ssl/r10k.yaml
-/opt/puppetlabs/bin/puppet agent -t
-```
+  
+`code.sh`
+  
+
+{% gist 3c673dfebd5a0b309cbc22095da348e7 code.sh %}
 
 And your done. From here all additional management can flow from your version controlled puppet code rather then bash scripts. If you want to build an Image from your Puppet server you can use the above examples with something like `packer`
 
@@ -202,65 +118,11 @@ And your done. From here all additional management can flow from your version co
 
 Here is an example packer file that can be used with esxi. I normally leave the build running for at the end:
 
-
+  
 `puppet.json`
   
-```json
-{
-   "_comment": "Build with `ESXI_PASSWORD=foo packer build puppet.json`",
-   "variables": {
-     "esxi_password": "{{env `ESXI_PASSWORD`}}"
-   },
-   "builders": [
-     {
-       "vm_name": "puppet.homeops.tech",
-       "type": "vmware-iso",
-       "iso_url": "http://ftp.iij.ad.jp/pub/linux/centos-vault/7.2.1511/isos/x86_64/CentOS-7-x86_64-DVD-1511.iso",
-       "iso_checksum": "4c6c65b5a70a1142dadb3c65238e9e97253c0d3a",
-       "iso_checksum_type": "sha1",
-       "ssh_username": "packer",
-       "ssh_password": "packer",
-       "ssh_wait_timeout": "10m",
-       "disk_size": "100000",
-       "tools_upload_flavor": "linux",
-       "guest_os_type": "centos-64",
-       "remote_type": "esx5",
-       "remote_username": "root",
-       "remote_password": "{{user `esxi_password`}}",
-       "remote_datastore": "synology.homeops.tech",
-       "remote_cache_datastore": "datastore1",
-       "remote_host": "esxi.homeops.tech",
-       "ssh_wait_timeout": "1000s",
-       "keep_registered": true,
-       "headless": "false",
-       "shutdown_command": "sudo /sbin/halt -p",
-       "floppy_files": [
-           "floppy/puppet.cfg"
-         ],
-       "boot_command": [
-         "<tab> inst.text inst.ks=hd:fd0:/puppet.cfg <enter><wait>"
-       ],
-       "vmx_data": {
-         "ethernet0.networkName": "VM Net",
-         "config.version": 8,
-         "virtualHW.version": 8,
-         "ethernet0.present": "TRUE",
-         "ethernet0.virtualDev": "e1000",
-         "ethernet0.startConnected": "TRUE",
-         "ethernet0.addressType": "generated",
-         "ethernet0.generatedAddressOffset": "0",
-         "ethernet0.wakeOnPcktRcv": "FALSE",
-         "memsize": "3096",
-         "cpuid.coresPerSocket": "1",
-         "numvcpus": "4",
-         "vhv.enable": "TRUE",
-         "RemoteDisplay.vnc.enabled": "TRUE",
-         "RemoteDisplay.vnc.port":  "5900"
-       }
-     }
-   ]
- }
-```
+
+{% gist 3c673dfebd5a0b309cbc22095da348e7 puppet.json %}
 
 I use the following kickstart file to tie every thing together
 
@@ -281,112 +143,10 @@ a PXE boot server, enter the following on the PXE boot prompt:
 Once your kickstart file is ready you can load it into the virtual floppy drive.
 
   
-`
-puppet.cfg
-`
+`puppet.cfg`
   
 
-```shell
-# CentOS 7.x kickstart file - puppet.cfg
-# Required settings
-lang en_US.UTF-8
-keyboard us
-rootpw packer
-authconfig --enableshadow --enablemd5
-timezone UTC
-
-# Optional settings
-install
-cdrom
-user --name=packer --plaintext --password packer
-services --disabled=NetworkManager --enabled=network,sshd
-unsupported_hardware
-network --bootproto=dhcp
-firewall --disabled
-selinux --permissive
-bootloader --location=mbr
-text
-skipx
-zerombr
-clearpart --all --initlabel
-autopart --type=lvm
-firstboot --disabled
-selinux --permissive
-
-reboot
-network --onboot yes --device ens33 \
-  --bootproto=static \
-  --ip=192.168.53.53 \
-  --netmask=255.255.255.0 \
-  --gateway=192.168.53.1 \
-  --nameserver=192.168.53.60 \
-  --nameserver=192.168.53.70 \
-  --noipv6 \
-  --hostname=puppet.homeops.tech
-
-%packages --nobase --ignoremissing --excludedocs
-# packer needs this to copy initial files via scp
-openssh-clients
-@base
-kernel-headers
-kernel-devel
-gcc
-make
-perl
-curl
-wget
-bzip2
-dkms
-patch
-net-tools
-git
-sudo
-nfs-utils
-%end
-
-%post --log=/var/log/post-install.log
-# Disable 'consistent network device naming' and make things act more or less reasonable in a VM-oriented context.
-echo > /etc/udev/rules.d/70-persistent-net.rules
-echo > /etc/udev/rules.d/75-persistent-net-generator.rules
-
-sed -i'' -e '/UUID=/d' /etc/sysconfig/network-scripts/ifcfg-ens33
-sed -i'' -e '/HWADDR=/d' /etc/sysconfig/network-scripts/ifcfg-ens33
-sed -i'' -e '/DHCP_HOSTNAME=/d' /etc/sysconfig/network-scripts/ifcfg-ens33
-sed -i'' -e 's/NM_CONTROLLED=.*/NM_CONTROLLED="no"/' /etc/sysconfig/network-scripts/ifcfg-ens33
-
-echo "Setting up ifcfg-ens33"
-
-for nic in /etc/sysconfig/network-scripts/ifcfg-eth*; do sed -i /HWADDR/d $nic; done
-sed -i -e '/#UseDNS yes/a UseDNS no' /etc/ssh/sshd_config
-yum -y remove networkmanager
-
-# Configure Synology LDAP
-authconfig --kickstart --enableshadow --enablemd5 --enableldap --enableldapauth --ldapserver synology.homeops.tech --ldapbasedn dc=homeops,dc=tech
-
-# configure packer user in sudoers
-echo "%packer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/packer
-chmod 0440 /etc/sudoers.d/packer
-cp /etc/sudoers /etc/sudoers.orig
-sed -i "s/^\(.*requiretty\)$/#\1/" /etc/sudoers
-
-# Configure Puppet
-mkdir -p /etc/puppetlabs/puppet/ssl
-
-echo '#!/bin/sh' > /etc/rc.d/rc.local
-chmod 0755 /etc/rc.d/rc.local
-echo 'mkdir -p /etc/puppetlabs/puppet/ssl' >> /etc/rc.d/rc.local
-echo 'mount -t nfs synology.homeops.tech:/volume1/ssl /etc/puppetlabs/puppet/ssl/' >> /etc/rc.d/rc.local
-
-echo 'yum clean all' >> /etc/rc.d/rc.local
-echo 'yum update' >> /etc/rc.d/rc.local
-
-echo '!!!!!Replace wirh your ca.sh!!!!!'>> /etc/rc.d/rc.local
-echo '!!!!!Replace wirh your puppetserver.sh!!!!!'>> /etc/rc.d/rc.local
-
-echo '/usr/bin/rm -rf /etc/rc.d/rc.local' >> /etc/rc.d/rc.local
-%end
-
-```
+{% gist 3c673dfebd5a0b309cbc22095da348e7 puppet.cfg %}
 
 And there you have it after running `ESXI_PASSWORD='pa$$w0rd' packer build puppet.json` , packer will build your puppetserver and leave it running. You can then make a template or use this as a bare bones provisioning system.
 
