@@ -1,0 +1,73 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely need to edit after that.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'jekyll serve'. If you change this file, please restart the server process.
+
+# Site title
+title: "HomeOps"
+
+# Tagline next to the site title
+tagline: "Because learning doesn't stop after 5pm"
+
+# A description of your site for social meta tag, search engines, and feed.xml
+description: "HomeOps is a collection of Tuturials and how tos by and for DevOps and SREs building home lab deployments"
+
+# The subpath of your site, e.g. /blog, for generating urls
+baseurl:
+
+# Sass
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# The base hostname & protocol of your site for where absolute urls are needed
+url: "http://www.homeops.tech"
+
+# Site navigation - each item must have a title and a url.
+navigation:
+- text: Home
+  url: /
+- text: About
+  url: /about/
+- text: Style Guide
+  url: /style-guide/
+- text: Archives
+  url: /tags/
+
+# The shortname for your Disqus site to enable comments.
+disqus: "homeops-tech"
+
+# Google Analytics id, e.g. "UA-NNNNNNNN-N"
+google_analytics: "UA-189292666-1"
+
+# Author information - author info at the bottom of the post
+author_name: "Zack Smith"
+author_bio: "Zack is a DevOps engineer,consultant and former consultant with over 20 years of experience"
+author_url:  "http://www.wallcity.org"
+author_location: "Portland, Oregon"
+author_image: /images/authorimage.png
+
+# Sidebar Add banner
+banner_url: "https://www.google.com"
+banner_image: images/banner.jpg
+banner_image_alt: "Alt text"
+
+# Social links in the site footer
+twitter_url: "https://twitter.com/acidprime"
+github_url: "https://github.com/acidprime"
+instagram_url: "https://www.instagram.com/acidprime"
+linkedin_url: "https://www.linkedin.com/in/acidprime/"
+
+# http://jekyllrb.com/docs/pagination/
+paginate: 4
+paginate_path: '/blog/page:num/'
+plugins:
+  - jekyll-paginate
+  - jekyll-seo-tag
+
+permalink: pretty
+markdown: kramdown
+kramdown:
+    auto_ids: false
