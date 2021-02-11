@@ -50,7 +50,7 @@ URL structure to integrate a website and docker together. In this how-to I will 
     </tbody>
 </table>
 
-I'll show how to do this with  Ubuntu here but the user side of this is essentially platform agnostic. The first thing to understand is that when a user logs into ssh they have a shell thats executed. You can configure that shell to be a wrapper script. There are ways to secure this
+I'll show how to do this with  Ubuntu here but the user side of this is essentially platform agnostic. The first thing to understand is that when a user logs into ssh they have a shell thats executed. You can configure that shell to be a wrapper script.
 Here is an example that drops a user into a docker shell
 
   
