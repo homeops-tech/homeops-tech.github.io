@@ -176,3 +176,33 @@ key = project.keys.create({'title': 'Student SSH Key',
                            'key': open('/root/.ssh/id_rsa.pub').read(),
                            'can_push': True,})
 ```
+
+## Create a webhook for a project
+
+```python
+def add_project_hook(module_name):
+  project = gl.projects.get('homeops-tech/%s' % module_name)
+  project.hooks.list()
+  project.hooks.create({'url': 'https://puppet.homeops.tech:8170/code-manager/v1/webhook?type=gitlab&token=%s' % (rbac_token),
+    'push_events': 1, 'enable_ssl_verification': False})
+```
+
+This is an exmple of using Gitlab to configure a webhook for a given module repo. This example is using code manager with Puppet Enterprise
+You can retreive a RBAC token with the following example code:
+
+
+```python
+def get_rbac_token():
+  data = json.dumps({'login': 'admin',
+                     'password': 'defaultpassword',
+                     'label' : 'gitlab_webhook',
+                     'description' : 'This is the token used for the Gitlab Webhooks',
+                     'lifetime': '0'})
+  r = requests.post('https://puppet.homeops.tech:4433/rbac-api/v1/auth/token',
+    data=data,
+    verify=False,
+  )
+  return json.loads(r.text)['token']
+```
+
+This example calls out to the RBAC API in puppet enterprise to get the Gitlab Token for code manager.
