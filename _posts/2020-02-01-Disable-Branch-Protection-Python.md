@@ -10,7 +10,6 @@ I enjoy using Gitlab for internal lab environments as it has a robust api and ca
 
 <!--more-->
 
-
 <table>
     <caption>Versions tested</caption>
     <tbody>
