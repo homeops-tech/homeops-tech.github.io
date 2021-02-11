@@ -1,0 +1,97 @@
+---
+layout: post
+title:  "Automating Gitlab with Python"
+date:   2020-01-01
+image: /images/posts/python.jpg
+tags: [python,git,gitlab,api,lambda,devops,scripts]
+---
+
+I enjoy using Gitlab for internal lab environments as it has a robust api and can be automated using things like `terraform`. One of things I normally use it for is creating represntaive environments with things like hooks enabled. This might looks like an example CI system thats fully built , and having a student have precreated content. However to create content in gitlab out of the box , or run something like `git push --mirror` you have to disable the branch protection. 
+
+<!--more-->
+
+
+<table>
+    <caption>Versions tested</caption>
+    <tbody>
+        <tr>
+            <th>Software</th>
+            <th>Version</th>
+            <th>OS</th>
+        </tr>
+        <tr>
+            <td>Gitlab</td>
+            <td>13.8</td>
+            <td>AWS Lambda</td>
+        </tr>
+        <tr>
+            <td>Python</td>
+            <td>3</td>
+            <td>AWS Lambda</td>
+        </tr>
+    </tbody>
+</table>
+
+
+  
+`disable_branch_protection.py`
+  
+
+```shell
+#!/usr/bin/env python    
+# Usage: GITLAB_PASSWORD=thepassword ./disable_branch_protection.py    
+
+import gitlab    
+import requests    
+import json    
+import os    
+import requests    
+
+GITLAB_GROUP   = 'homeops-tech'    
+GITLAB_ADMIN   = 'root'    
+GITLAB_API_URL = 'https://gitlab.homeops.tech:443'    
+
+def get_gitlab_token(username,password):    
+  session = requests.Session()    
+  session.verify = '/etc/gitlab/ssl/gitlab.homeops.tech.crt'    
+  session.keep_alive = True    
+  # https://docs.gitlab.com/ce/api/oauth2.html#resource-owner-password-credential    
+  url = 'https://gitlab.homeops.tech/oauth/token'    
+  payload = {'username': username,    
+             'password': password,    
+             'grant_type': 'password'    
+            }    
+  r = session.post(url, data=payload, verify = '/etc/gitlab/ssl/gitlab.homeops.tech.crt')    
+  oauth = json.loads(r.text)    
+  api_token = oauth['access_token']    
+  session.close    
+  return api_token    
+
+# Python lib doesn't support this after key creation
+# https://docs.gitlab.com/ee/api/deploy_keys.html#enable-a-deploy-key
+# This allows students to push to this repo with deploy key
+def update_ssh_key():
+  project = gl.projects.get('homeops-tech/control-repo')
+  url = '%s/api/v4/projects/%s' % (GITLAB_API_URL,project.id)
+  payload = {'default_branch': 'master'}
+  headers = {'Authorization': 'Bearer %s' % api_token }
+  r = requests.put(url, data=payload, verify=False, headers=headers)
+  if r.status_code == 200:
+    print "\tUpdated Deploy Key push access"
+  else:
+    print "\tUnable to update deploy key access"
+
+
+api_token = get_gitlab_token(GITLAB_ADMIN,os.environ['GITLAB_PASSWORD'])    
+gl = gitlab.Gitlab(GITLAB_API_URL, oauth_token=api_token,ssl_verify=False)    
+project = gl.projects.get('homeops-tech/control-repo')    
+
+branch = project.branches.get('master')    
+branch.unprotect()
+```
+
+This script will use the local SSL certificate to validate the connection. You can pusht the password via 
+
+```shell
+GITLAB_PASSWORD=thepassword ./disable_branch_protection.py
+```
