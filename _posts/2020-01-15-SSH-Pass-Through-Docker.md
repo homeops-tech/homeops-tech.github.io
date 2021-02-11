@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Docker SSH Pass through links in Linux"
+title:  "Docker SSH Pass through links"
 date:   2020-01-01
 image: /images/posts/docker.jpg
 tags: [puppet,devops,docker,vagrant,virtualbox,ubuntu,gdm,ssh,how to]
