@@ -80,7 +80,7 @@ This exec will create a new shell in a running container. However if you want to
 
 ## Enabling SSH Links in Ubuntu (GDM)
 
-Unlike macOS which ships with `ssh://` urls out of the box, this handler application is needed for ubunutu. This simple wrapper is just taking the url and stripping the progID off the begining. It then passes it to a new shell. The result is the command `ssh foo@bar` instead of `ssh ssh://foo@bar`. This is ripe for arbitrary code execution so I suggestion you only set this up for controller environments or do more validation here.
+Unlike macOS which ships with `ssh://` urls out of the box, this handler application is needed for Ubuntu. This simple wrapper is just taking the url and stripping the progID off the begining. It then passes it to a new shell. The result is the command `ssh foo@bar` instead of `ssh ssh://foo@bar`. This is ripe for arbitrary code execution so I suggestion you only set this up for controller environments or do more validation here.
 
 ```shell
 #Write code for new handler
