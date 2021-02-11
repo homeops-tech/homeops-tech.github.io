@@ -147,4 +147,4 @@ Once the users are setup you can configure the keys and the `AuthorizedKeysComma
 
 {% gist 1778440802dcc250b9560be55fff5f44 ssh.pp %}
 
-> You could fully automate this setup by adding some of these scripts to vagrant provisioners however that wasn't my need in using this vagrant box.
+> You could fully automate this [setup.sh](https://gist.githubusercontent.com/acidprime/1778440802dcc250b9560be55fff5f44/raw/2de97e9899474a5cfe379692d454a26dade4f51d/setup.sh) by adding some of these scripts to vagrant provisioners however that wasn't my need in using this vagrant box.
