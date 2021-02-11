@@ -37,7 +37,7 @@ I enjoy using Gitlab for internal lab environments as it has a robust api and ca
 `disable_branch_protection.py`
   
 
-```shell
+```python
 #!/usr/bin/env python    
 # Usage: GITLAB_PASSWORD=thepassword ./disable_branch_protection.py    
 
@@ -94,4 +94,85 @@ This script will use the local SSL certificate to validate the connection. You c
 
 ```shell
 GITLAB_PASSWORD=thepassword ./disable_branch_protection.py
+```
+
+The Python module supports many other options for automating common tasks
+
+## Working with Branches 
+
+
+```python
+def create_student_branches(n):
+  try:
+    branch = project.branches.create({'branch': "student%s" % n,
+                                    'ref': 'production'})
+  except gitlab.exceptions.GitlabCreateError:
+    print "\tstudent%s branch already exists" % n
+
+def protect_branch():
+  branch = project.branches.get('production')
+  branch.protect()
+```
+
+This example code can create a branch and protect it.
+
+## Working with Users
+
+Add a user to the developer group.
+
+```python
+# Add the users to the puppet group as a developer
+def add_students_to_group(n):
+  try:
+    student = gl.users.list(username="student%s" % n)[0]
+    member = group.members.create({'user_id': student.id,
+                                 'access_level': gitlab.DEVELOPER_ACCESS})
+  except gitlab.exceptions.GitlabCreateError:
+     print "\tstudent%s already a member of group" % n
+```
+
+Create a user
+
+```python
+# Create the student accounts
+def create_students(n):
+  try:
+    user = gl.users.create({'email': "student%s@homeops.tech" % n,
+                          'password': 'learn',
+                          'username': "student%s" % n,
+                          'skip_confirmation': True,
+                          'name': "student %s" % n})
+  except gitlab.exceptions.GitlabCreateError:
+    print "\tstudent%s already created" % n
+    # Skip the confirmation if user already created
+    student = gl.users.list(username="student%s" % n)[0]
+    student.skip_confirmation = True
+    student.save()
+```
+
+Create a repo
+
+```python
+def create_module_repo(n):
+  student = gl.users.list(username="student%s" % n)[0]
+  try:
+    user_project = student.projects.create({'name': 'time',
+      'description': 'Example Puppet Module',
+    })
+  except gitlab.exceptions.GitlabCreateError:
+    print "\t%s already has a time module created" % student.name
+    user_project  = student.projects.list(name=MODULE_REPO)[0]
+```
+
+## Creating a new project
+
+You can create projects and enable a deploy key for them
+
+```python
+api_token = get_gitlab_token(GITLAB_ADMIN,os.environ['GITLAB_PASSWORD'])
+gl = gitlab.Gitlab(GITLAB_API_URL, oauth_token=api_token,ssl_verify=False)
+project = gl.projects.get('homeops-tech/control-repo')
+key = project.keys.create({'title': 'Student SSH Key',
+                           'key': open('/root/.ssh/id_rsa.pub').read(),
+                           'can_push': True,})
 ```
