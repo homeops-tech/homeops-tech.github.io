@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Provision Puppetserver with Packer"
-date:   2020-01-01
+date:   2020-02-01
 image: /images/posts/puppet.jpg
 tags: [puppet,devops,packer,kickstart,openssl,puppetserver,esxi,how to]
 ---
