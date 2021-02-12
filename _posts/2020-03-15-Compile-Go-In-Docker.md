@@ -29,7 +29,7 @@ pin the version of the  given software or libraries which has some huge stabilit
     </tbody>
 </table>
 
-In an upcoming artible I will cover how I use this same trick to selectivly upgrade terraform code across a suite of lambdas. In the case of Golang, using docker has the major benefits e.g. its likely a container is my final output as well as my compile time environment. Most of the code I write ends up in one way or another on a serverless platform like AWS Lambda. Lambdas recently started support docker containers in liue of the standard zip file we had all grown accustom to. This means I can use the
+In an upcoming article I will cover how I use this same trick to selectively upgrade terraform code across a suite of lambdas. In the case of Golang, using docker has the major benefits e.g. its likely a container is my final output as well as my compile time environment. Most of the code I write ends up in one way or another on a serverless platform like AWS Lambda. Lambdas recently started support docker containers in liue of the standard zip file we had all grown accustom to. This means I can use the
 environment to compile my code and then the resultant container to deploy it.
 
 
@@ -85,7 +85,7 @@ RUN  --mount=type=ssh go mod download -x
 COPY . .
 ```
 
-Dockers layer system is great for build processes as it will cache things in each layer and reuse them across builds. In the case of common libraries, especially external we dont want that. Its just downloading the same cache over and over. Given a language like go has a compliation , this can slow down your development process. The `--mount` flag uses the new expiermental BuildKit function of docker to cache just that layer across invocations.
+Docker's layer system is great for build processes as it will cache things in each layer and reuse them across builds. In the case of common libraries, especially external we don't want that. Its just downloading the same cache over and over. Given a language like go has a compilation , this can slow down your development process. The `--mount` flag uses the new experimental BuildKit function of docker to cache just that layer across invocations.
 
 This requires a special environmental variable you can see in this Makefile example
 
