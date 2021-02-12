@@ -107,6 +107,10 @@ These snippets allow you to declare any variable with `TF_VAR` and have it passe
 
 > This file should be in your .gitignore if it contains sensitive values, consider instead using the secure AWS credentials to bootstrap access to secrets.
 
+  
+`apply.sh`
+  
+
 {% gist 679c5fd0c32ac40c680d09d5b1aa5b63 apply.sh %}
 
 Due the function being named terraform you, can simply remove the source line for the functions and this is essentially just a generic wrapper around the terraform commands. While `init` is handled differently e.g. its a `build` vs a `run` all other terraform commands act identically to the command line. If a team member installed the latest version of terraform, they will not "accidentally" upgrade your state by doing an apply. The terraform version is pinned to the `TERRAFORM_VERSION` var we declared. This means this is likely a drop in replacement for any existing script you might have.
