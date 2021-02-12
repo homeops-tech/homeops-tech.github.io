@@ -96,7 +96,7 @@ At this point you should have a PuppetServer running but it wont have any code t
 ```yaml
 ---
 sources:
-  wallcity:
+  homeops:
     remote: 'git@github.com:homeops-tech/control-repo.git'
     basedir: '/etc/puppetlabs/code/environments'
 git:
