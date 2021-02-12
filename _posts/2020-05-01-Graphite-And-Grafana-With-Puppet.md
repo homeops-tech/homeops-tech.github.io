@@ -216,7 +216,7 @@ sudo -H PYTHONPATH=/opt/graphite/webapp django-admin.py collectstatic --noinput 
 
 ### Installing ElasticSearch 
 
-To store the graphs in grafana we need an elasticsearch deployment. I actually don't use this as I normally export the json and have puppet manage it so it can be redeployed as will. The following however is an example of getting elasticsearch up and running.
+To store the graphs in grafana we need an elasticsearch deployment. I actually don't use this as I normally export the json and have puppet manage it so it can be redeployed at will. The following however is an example of getting elasticsearch up and running.
 
 ```puppet
 class {'elasticsearch':
