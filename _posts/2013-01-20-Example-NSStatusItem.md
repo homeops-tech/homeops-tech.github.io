@@ -6,6 +6,6 @@ image: /images/posts/cocoa.jpg
 tags: [cocoa,mac]
 ---
 
-![NSStatusItem.png](NSStatusItem.png)
+![NSStatusItem.png](/images/posts/NSStatusItem.png)
 
 I created a sample NSStatusItem Application for my presentation at Mac Tech Conference - 2011 It can be found [here](https://github.com/acidprime/StatusItem)
