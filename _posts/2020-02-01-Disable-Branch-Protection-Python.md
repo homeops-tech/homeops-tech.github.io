@@ -205,3 +205,17 @@ def get_rbac_token():
 ```
 
 This example calls out to the RBAC API in puppet enterprise to get the Gitlab Token for code manager.
+
+## Import a project
+
+Gitlab has the ability to export a repo with all its metadata. You can then import this template via a tar.gz. file.
+
+```shell
+output = gl.projects.import_project(open('/tmp/export.tgz', 'rb'), 'control-repo',group.id)
+# Get a ProjectImport object to track the import status
+project_import = gl.projects.get(output['id'], lazy=True).imports.get()
+while project_import.import_status != 'finished':
+    time.sleep(1)
+    project_import.refresh()
+```
+
