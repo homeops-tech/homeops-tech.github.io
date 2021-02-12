@@ -3,7 +3,7 @@ layout: post
 title:  "Graphite, Grafana and Collectd"
 date:   2020-05-20
 image: /images/posts/graphite.png
-tags: [graphite,grafana,puppet,collectd]
+tags: [graphite,grafana,puppet,collectd,how to]
 ---
 
 I recently moved my existing esxi hypervisors to [ProxMox](https://www.proxmox.com/en/) to have more control then the esxi shell allowed. This allows me to run puppet natively on the hyper visor host. As part of this upgrade I installed an old SSD and ram into my 2011 Mac Mini. While doing so I broke the small traces that attach the cooling fan. After some research I found many people have done the same and just leave it fanless. This presented me with a great opportunity to graph the
