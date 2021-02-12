@@ -298,6 +298,15 @@ This installs the sensors package. I also for good measure (and maybe required) 
 
 ```shell
 sudo sensors-detect
+sudo sensors
+coretemp-isa-0000
+Adapter: ISA adapter
+Package id 0:  +53.0°C  (high = +86.0°C, crit = +100.0°C)
+Core 0:        +51.0°C  (high = +86.0°C, crit = +100.0°C)
+Core 1:        +53.0°C  (high = +86.0°C, crit = +100.0°C)
+Core 2:        +46.0°C  (high = +86.0°C, crit = +100.0°C)
+Core 3:        +49.0°C  (high = +86.0°C, crit = +100.0°C)
+...
 ```
 
 ![Sensors](/images/posts/sensors.png)
