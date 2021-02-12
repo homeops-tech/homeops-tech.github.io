@@ -3,7 +3,7 @@ layout: post
 title:  "Build Ubuntu Desktop With Packer"
 date:   2020-02-15
 image: /images/posts/packer.jpg
-tags: [packer,vagrant,devops]
+tags: [packer,vagrant,devops,ubuntu,ssh]
 ---
 
 In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Through-Docker/) I used a third party vagrant box. This box was configured to load the GDM window manager and came with things like docker pre-installed. However as with most things in system imaging I needed to customize my images. This is normally due to requirements like size and configuration. In addtion building a bare metal iso installed version of the base image allows me to more easily upgrade the installation over time. This is sort of best of both worlds approache to system imaging as you have the ability to use a image in production but also to upgrade the system using the standard OS installer.
