@@ -6,7 +6,7 @@ image: /images/posts/golang.jpg
 tags: [docker,golang,go,make,ssh,macOS]
 ---
 
-I have recently been moving almost all of my workflows to docker. This makes allot of sense over time as things like your development environment can change from laptop to laptop or os to os. While I think something like `https://nixos.org/` is a great step forward in the direction of a common development and delivery platform. I still tend to fallback to docker when building simple shell scripts that I need to share with members of my team. Running things in docker can mean that you can also
+I have recently been moving almost all of my workflows to docker. This makes allot of sense over time as things like your development environment can change from laptop to laptop or os to os. While I think something like [NixOs](https://nixos.org/) is a great step forward in the direction of a common development and delivery platform. I still tend to fallback to docker when building simple shell scripts that I need to share with members of my team. Running things in docker can mean that you can also
 pin the version of the  given software or libraries which has some huge stability and repeatability implications over time. Something many people miss when sharing assets among each other.
 
 
