@@ -6,7 +6,7 @@ image: /images/posts/packer.jpg
 tags: [packer,vagrant,devops]
 ---
 
-In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Through-Docker/) I used a third party box. This box was configured to load the window manager and came with things like docker pre-installed. However as with most things in system imaging I needed to customize my images due to requirements like size. In addtion building a bare metal iso installed version of the base image allows me to more easily upgrade the installation over time. This is sort of best of both worlds approache to system imaging as you have the ability to use a image in production but also to upgrade the system using the standard OS installer.
+In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Through-Docker/) I used a third party vagrant box. This box was configured to load the GDM window manager and came with things like docker pre-installed. However as with most things in system imaging I needed to customize my images. This is normally due to requirements like size and configuration. In addtion building a bare metal iso installed version of the base image allows me to more easily upgrade the installation over time. This is sort of best of both worlds approache to system imaging as you have the ability to use a image in production but also to upgrade the system using the standard OS installer.
 
 <!--more-->
 
@@ -41,9 +41,9 @@ Installing using the ubuntu desktop iso is an interesting expierence to say the 
 
 > I recently bought a [CHG90](https://amzn.to/3dcAAfE) gaming monitor and it was actually able to not line wrap this in vim for me. Stay tuned for a review on said monitor - lol
 
-I'd be interested to hear if anyone has a better way of doing this, my first instinct is to just built a custom iso. This is easier in PXE booting in my expierence. 
+I'd be interested to hear if anyone has a better way of doing this, my first instinct is to just built a custom iso. This is easier in PXE booting in my expierence. This reminds me a bit of apple scripts system events framework.
 
-I also had to to lower the boot wait on my box from 10 to 6 seconds e.g. `"boot_wait": "6s"`. This makes sense as its essentially just spamming the boot loaded like we all do when on hardware boxen.
+I also had to to lower the boot wait on my box from 10 to 6 seconds e.g. `"boot_wait": "6s"`. Otherwise I would miss the F6 key invocation timeout. This makes sense as its essentially just spamming the boot loaded like we all do when on hardware boxen.
 
   
 `ubuntu-1804-desktop-vagrant.json`
@@ -87,3 +87,5 @@ end
 ```shell
 vagrant up
 ```
+
+You should be greated with a Graphical interface that can be logged in with the `vagrant:vagrant` user:password combo.
