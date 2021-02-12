@@ -97,6 +97,16 @@ sudo service docker restart
 docker version
 ```
 
+> You can reset this cache with the Make target below. Be aware that it will also get reset/wonky if you run something like `docker system prune -a` , however restarting docker will fix it.
+
+```make
+.PHONY: clean
+ clean:
+     @docker builder prune --filter type=exec.cachemount
+`
+```
+
+
 `Makefile`
 
 
