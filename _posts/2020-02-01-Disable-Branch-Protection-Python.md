@@ -3,7 +3,7 @@ layout: post
 title:  "Automating Gitlab with Python"
 date:   2020-01-01
 image: /images/posts/python.jpg
-tags: [python,git,gitlab,api,lambda,devops,scripts]
+tags: [python,git,gitlab,api,lambda,devops,scripts,reference]
 ---
 
 I enjoy using Gitlab for internal lab environments as it has a robust api and can be automated using things like [`terraform`](https://registry.terraform.io/providers/gitlabhq/gitlab/latest/docs). One of things I normally use it for is creating represntaive environments with things like hooks enabled. This might looks like an example CI system thats fully built , and having a student have precreated content. However to create content in gitlab out of the box , or run something like `git push --mirror` you have to disable the branch protection. 
