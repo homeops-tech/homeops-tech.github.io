@@ -36,7 +36,7 @@ When I left Puppet a year ago I decided to move off of the [Puppet Enterprise](h
     </tbody>
 </table>
 
-I started with a Centos 7 base for my installation as Puppet needs to be realtivly stable given most of the configurations flow from it. Centos is in my expierence the most common installation candidate in the puppet ecosystem.
+I started with a Centos 7 base for my installation as Puppet needs to be relatively stable given most of the configurations flow from it. Centos is in my experience the most common installation candidate in the puppet ecosystem.
 
 > Given the recent Centos news I may revisit this choice in the future. But I sometimes resolve to let things be somewhat static when they are this central especially in a home lab.
 
@@ -45,7 +45,7 @@ I will cover migrating certificate authorities to [Vault](https://www.hashicorp.
 
 ## Pre-Generating the Certificate Authority 
 
-While this process is normally automatic, I like to build my Puppet server multiple times from scratch to get the automation as dialed in as possible. This means I want to preserve the CA files between installations once I get it right so agents don't need their certificates recreated each time I rebuild Puppet. As such I put these certificates on shared storage like an NFS export on my synology. Scripting the intial CA deployment is essentially the same as what happens the second build where these files pre-exist before installation. This also has some huge advantages for moving from physical to virtual and back again.
+While this process is normally automatic, I like to build my Puppet server multiple times from scratch to get the automation as dialed in as possible. This means I want to preserve the CA files between installations once I get it right so agents don't need their certificates recreated each time I rebuild Puppet. As such I put these certificates on shared storage like an NFS export on my [Synology](https://amzn.to/3tU1CP6). Scripting the initial CA deployment is essentially the same as what happens the second build where these files pre-exist before installation. This also has some huge advantages for moving from physical to virtual and back again.
 
 I run the following which mounts a SSL directory only to my puppet host.
 
@@ -54,7 +54,7 @@ mkdir -p /etc/puppetlabs/puppet/ssl/
 mount -t nfs synology.homeops.tech:/volume1/ssl /etc/puppetlabs/puppet/ssl/
 ```
 
-> If this was production you should would want to consider the security implications e.g. what machines can access your private keys. I do want to migrate to Kerberos in the future as well, but most of the core infrastructure I use builds the next infrasturcture and thus needs to be solid and simple.
+> If this was production you should would want to consider the security implications e.g. what machines can access your private keys. I do want to migrate to Kerberos in the future as well, but most of the core infrastructure I use builds the next infrastructure and thus needs to be solid and simple.
 
 Once your NFS export is mounted at the default "ssldir" for puppetserver you can change directories and generate a new certificate authority. First though I need to generate an openssl configuration.
 
@@ -103,7 +103,7 @@ git:
   provider: shellgit
 ```
 
-Using the `r10k.yaml` above you can bootstrap the inital control repo on your puppet server. This will download all environments (branches) and modules specified in your Puppetfile. I normally have Puppet managed by Puppet in most case and so I also perform a puppet run at the end. There are some chicken before the egg issues you might encounter like hiera, so testing this from scratch is a good idea.
+Using the `r10k.yaml` above you can bootstrap the initial control repo on your puppet server. This will download all environments (branches) and modules specified in your Puppetfile. I normally have Puppet managed by Puppet in most case and so I also perform a puppet run at the end. There are some chicken before the egg issues you might encounter like hiera, so testing this from scratch is a good idea.
 
   
 `code.sh`
