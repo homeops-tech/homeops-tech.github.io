@@ -6,7 +6,7 @@ image: /images/posts/packer.jpg
 tags: [packer,vagrant,devops,ubuntu,ssh,bare metal,linux]
 ---
 
-In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Through-Docker/) I used a third party vagrant box. This box was configured to load the GDM window manager and came with things like docker pre-installed. However as with most things in system imaging I needed to customize my images. This is normally due to requirements like size and configuration. In addtion building a bare metal iso installed version of the base image allows me to more easily upgrade the installation over time. This is sort of best of both worlds approache to system imaging as you have the ability to use a image in production but also to upgrade the system using the standard OS installer.
+In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Through-Docker/) I used a third party vagrant box. This box was configured to load the GDM window manager and came with things like docker pre-installed. However as with most things in system imaging I needed to customize my images. This is normally due to requirements like size and configuration. In addition building a bare metal iso installed version of the base image allows me to more easily upgrade the installation over time. This is sort of best of both worlds approach to system imaging as you have the ability to use a image in production but also to upgrade the system using the standard OS installer.
 
 <!--more-->
 
@@ -31,7 +31,7 @@ In one of my [previous posts](http://www.homeops.tech/2020/01/01/SSH-Pass-Throug
     </tbody>
 </table>
 
-Installing using the ubuntu desktop iso is an interesting expierence to say the least. The little practical examples I found essentially rewrite the boot command using a series of backspaces. This is pretty interesting to watch:
+Installing using the ubuntu desktop iso is an interesting experience to say the least. The little practical examples I found essentially rewrite the boot command using a series of backspaces. This is pretty interesting to watch:
 
 ![Animated-Gif](/images/posts/packer.gif)
 
@@ -88,4 +88,4 @@ end
 vagrant up
 ```
 
-You should be greated with a Graphical interface that can be logged in with the `vagrant:vagrant` user:password combo.
+You should be greeted with a Graphical interface that can be logged in with the `vagrant:vagrant` user:password combo.
