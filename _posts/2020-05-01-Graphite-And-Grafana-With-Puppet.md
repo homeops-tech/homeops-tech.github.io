@@ -105,7 +105,7 @@ class { 'graphite':
 
 Here we can install Graphite and configure it with a storage scheme for collectd. The important bits here are `gr_web_server => 'none',` which allows us to configure graphite to be hosted with apache.
 
-# Setting up Webserver
+# Setting up a Webserver
 
 As both Graphite and Grafana can use apache lets start with a default installation.
 
