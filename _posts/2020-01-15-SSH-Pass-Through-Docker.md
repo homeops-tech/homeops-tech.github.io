@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Docker SSH Pass through links"
-date:   2020-01-01
+date:   2020-01-15
 image: /images/posts/docker.jpg
 tags: [puppet,devops,docker,vagrant,virtualbox,ubuntu,gdm,ssh,how to]
 ---
