@@ -89,9 +89,15 @@ Dockers layer system is great for build processes as it will cache things in eac
 
 This requires a special environmental variable you can see in this Makefile example
 
-  
-`Makefile`
+On linux you may also need to enable experimental (this is in the UI on mac)
 
+```shell
+echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json;
+sudo service docker restart
+docker version
+```
+
+`Makefile`
 
 
 ```make
