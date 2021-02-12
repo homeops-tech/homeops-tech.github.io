@@ -85,7 +85,7 @@ RUN  --mount=type=ssh go mod download -x
 COPY . .
 ```
 
-Dockers layer system is great for build processes as it will cache things in each layer and reuse them across builds. In the case of common libraries, especially external we dont want that. Its just downloading the same cache over and over. Given a language like go has a compliation , this can slow down your development process. The `--mount` flad uses the new expiermental BuildKit function of docker to cache just that layer across invocations.
+Dockers layer system is great for build processes as it will cache things in each layer and reuse them across builds. In the case of common libraries, especially external we dont want that. Its just downloading the same cache over and over. Given a language like go has a compliation , this can slow down your development process. The `--mount` flag uses the new expiermental BuildKit function of docker to cache just that layer across invocations.
 
 This requires a special environmental variable you can see in this Makefile example
 
