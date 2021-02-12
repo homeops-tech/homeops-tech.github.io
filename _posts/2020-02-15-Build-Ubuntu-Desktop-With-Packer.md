@@ -46,106 +46,44 @@ I'd be interested to hear if anyone has a better way of doing this, my first ins
 I also had to to lower the boot wait on my box from 10 to 6 seconds e.g. `"boot_wait": "6s"`. This makes sense as its essentially just spamming the boot loaded like we all do when on hardware boxen.
 
   
-`ubuntu-1804-desktop.json`
+`ubuntu-1804-desktop-vagrant.json`
   
 
-```json
-{
-    "variables": {
-        "iso_checksum": "c0d025e560d54434a925b3707f8686a7f588c42a5fbc609b8ea2447f88847041",
-        "iso_checksum_type": "sha256",
-        "non_gui": "false",
-        "vboxversion": "04.3",
-        "osdetails": "ubuntu-18.04.3-amd64",
-        "ssh_fullname": "vagrant",
-        "ssh_password": "vagrant",
-        "ssh_username": "vagrant",
-        "hostname":   "ubuntu.vagrant.vm",
-        "ubuntu_images_url": "https://releases.ubuntu.com/18.04",
-        "version": "{{ timestamp }}",
-        "version_desc": "Latest kernel build of Ubuntu Vagrant images based on Ubuntu 18.04.3 (With Desktop)"
-    },
-    "builders": [
-        {
-            "type": "virtualbox-iso",
-            "guest_os_type": "Ubuntu_64",
-            "iso_url": "{{ user `ubuntu_images_url` }}/ubuntu-18.04.5-desktop-amd64.iso",
-            "iso_checksum": "file:{{ user `ubuntu_images_url` }}/SHA256SUMS",
-            "boot_command": [
-                "<esc><esc><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-                " auto=true priority=critical noprompt ",
-                " hostname={{user `hostname`}} ",
-                " url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
-                " automatic-ubiquity ",
-                " ubiquity/reboot=true ",
-                " keyboard-configuration/layoutcode=us ",
-                " debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
-                " languagechooser/language-name=English ",
-                " countrychooser/shortlist=IN ",
-                " localechooser/supported-locales=en_US.UTF-8 ",
-                " netcfg/choose_interface=auto ",
-                " boot=casper ",
-                " initrd=/casper/initrd ",
-                " quiet splash noprompt noshell ",
-                " --- <wait>",
-                "<enter><wait>"
-            ],
-            "boot_wait": "6s",
-            "disk_size": "40000",
-            "headless": false,
-            "http_directory": "http",
-            "ssh_password": "{{user `ssh_password`}}",
-            "ssh_username": "{{user `ssh_username`}}",
-            "ssh_port": 22,
-            "ssh_wait_timeout": "10000s",
-            "shutdown_command": "echo 'vagrant'|sudo -S shutdown -P now",
-            "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
-            "virtualbox_version_file": ".vbox_version",
-            "vm_name": "packer-ubuntu-18.04-amd64",
-            "vboxmanage": [
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--memory",
-                    "1024"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--cpus",
-                    "1"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--audio",
-                    "none"
-                ],
-                [
-                    "modifyvm",
-                    "{{.Name}}",
-                    "--usb",
-                    "off"
-                ]
-            ]
-        }
-    ],
-    "provisioners": [
-        {
-            "type": "shell",
-            "scripts": [
-                "scripts/init.sh",
-                "scripts/cleanup.sh"
-            ]
-        }
-    ],
-    "post-processors": [
-        {
-            "type": "vagrant",
-            "compression_level": "8",
-            "keep_input_artifact": true,
-            "output": "ubuntu-18.04-{{.Provider}}.box"
-        }
-    ]
-}
+{% gist ba02ee0d3c0383bcef92bf772877a197 ubuntu-1804-desktop-vagrant.json %}
+
+You can build this box yourself with 
+
+```shell
+packer build ubuntu-1804-desktop-vagrant.json
+```
+
+That will build the box and output is as `ubuntu-18.04-virtualbox.box`
+
+You can then create a Vagrantfile like so:
+
+  
+`Vagrantfile`
+  
+
+
+```ruby
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu-18.04-virtualbox.box"
+
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    vb.gui = true
+    vb.memory = '2048'
+  end
+
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+end
+```
+
+...and finally boot the box up with 
+
+
+```shell
+vagrant up
 ```
