@@ -213,6 +213,13 @@ sudo -H PYTHONPATH=/opt/graphite/webapp django-admin.py createsuperuser --settin
 sudo -H PYTHONPATH=/opt/graphite/webapp django-admin.py collectstatic --noinput --settings=graphite.settings
 ```
 
+You should be able to verify the installation by sending some example metrics too it:
+
+```shell
+PORT=2003
+SERVER=graphite.homeops.tech
+echo "local.random.diceroll 4 `date +%s`" | nc -q0 ${SERVER} ${PORT}
+```
 
 ### Installing ElasticSearch 
 
