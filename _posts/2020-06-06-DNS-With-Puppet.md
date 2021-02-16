@@ -41,7 +41,12 @@ I often use static reservations for all my IOT devices. This means all devices o
 
 > I run this all on a set of two raspberry pis'
 
-```Puppetfile
+  
+  `Puppetfile`
+  
+
+
+```ruby
 mod 'dns',
   :git => 'git://github.com/amateo/puppet-dns.git',
   :commit => '15805a8a6577bea6b3dfab1d8951369c925b5e6a'
