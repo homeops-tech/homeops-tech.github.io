@@ -61,9 +61,43 @@ mod 'hiera',
 mod 'resolv_conf',
   :git => 'git@github.com:saz/puppet-resolv_conf.git',
   :tag => 'v3.0.5'
+
+mod 'systemd',
+  :git => 'https://github.com/camptocamp/puppet-systemd.git',
+  :ref => '2.12.0'
+
+mod 'timezone',
+  :git => 'https://github.com/kogitoapp/puppet-timezone.git',
+  :ref => 'v2.1.1'
 ```
 
 > Using a `monit` fork here as the original author doesn't update OS version quickly enough for me.
+
+
+# Configuring NTP
+
+Given modern requirements like DNSSec , time sync is an about necessity for dns servers.
+
+```puppet
+class{'systemd':
+  manage_timesyncd    => true,
+  ntp_server          => ['0.pool.ntp.org', '1.pool.ntp.org'],
+  fallback_ntp_server => ['2.pool.ntp.org', '4.pool.ntp.org'],
+}
+
+class { 'timezone':
+    timezone => 'UTC',
+}
+
+class { 'ntp':
+  servers    => [ ''0.pool.ntp.org,'1.pool.ntp.org' ],
+  autoupdate => true,
+}
+
+package {'ntpdate':}
+```
+
+While this goes most of the way, there is a chicken before the egg scenerio here, that ntp requires DNS. I work around that on boot with the systemd implementation. See below.
 
 # Installing Bind 
 
@@ -270,3 +304,77 @@ class { 'resolv_conf':
 ```
 
 Once we have tested the DNS server we can set it to perform resolutions with itself.
+
+## Systemd Hacks
+
+Given i normally use raspberry pi's I can't rely on timesync working out of the box. I work around that by waiting 1minute after boot (and the network is online) to sync with an IP address of a known NTP server.
+
+```
+ # Setup the users custom shell as pass through to docker
+  file {"/usr/local/bin/atboot.sh":
+    ensure  => file,
+    owner   => root,
+    mode    => '0755',
+    content =>   @("SHELL"/L)
+    #!/bin/bash -x
+    ntpdate -u 209.114.111.1 &&
+      service bind9 restart &&
+        dig google.com @127.0.0.1
+    | SHELL
+  } 
+
+  $_timer = @(EOT)
+  [Unit]
+  Description=Run DNS checks at startup
+  Wants=network-online.target
+  After=network-online.target
+  [Timer]
+  OnBootSec=1min
+  OnUnitActiveSec=1w 
+  Unit=timesync.service
+  EOT
+  
+  $_service = @(EOT)
+  [Service]
+  Type=oneshot
+  ExecStartPre=/bin/sh -c 'until ping -c 1 209.114.111.1 ; do sleep 1; done;'
+  ExecStart=/usr/local/bin/atboot.sh
+  TimeoutSec=0
+  StandardOutput=journal+console
+  StandardError=journal+console
+  EOT
+  
+  systemd::timer{'atboot.timer':
+    timer_content   => $_timer,
+    service_unit    => 'timesync.service',
+    service_content => $_service,
+    active          => true,
+    enable          => true,
+  }
+```
+
+This should run and make sure during a reboot or outage that your server syncs time even when DNS is broken
+
+```
+● timesync.service
+     Loaded: loaded (/etc/systemd/system/timesync.service; static; vendor preset: enabled)
+     Active: inactive (dead) since Tue 2021-02-16 12:27:00 PST; 31s ago
+TriggeredBy: ● atboot.timer
+    Process: 248739 ExecStartPre=/bin/sh -c until ping -c 1 209.114.111.1 ; do sleep 1; done; (code=exited, status=0/SUCCESS)
+    Process: 248742 ExecStart=/usr/local/bin/atboot.sh (code=exited, status=0/SUCCESS)
+   Main PID: 248742 (code=exited, status=0/SUCCESS)
+
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; QUESTION SECTION:
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;google.com.                        IN        A
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; ANSWER SECTION:
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: google.com.                89        IN        A        172.217.3.206
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; Query time: 19 msec
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; SERVER: 127.0.0.1#53(127.0.0.1)
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; WHEN: Tue Feb 16 12:27:00 PST 2021
+Feb 16 12:27:00 dns1.homeops.tech atboot.sh[248941]: ;; MSG SIZE  rcvd: 83
+Feb 16 12:27:00 dns1.homeops.tech systemd[1]: timesync.service: Succeeded.
+Feb 16 12:27:00 dns1.homeops.tech systemd[1]: Finished timesync.service.
+
+```
+
+You should see simiilar output to this, if your systemd item fails you can monitor its failures to determine if DNS is down due to timesync issues.
