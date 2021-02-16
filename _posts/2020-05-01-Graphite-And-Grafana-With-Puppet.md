@@ -260,7 +260,33 @@ es_instance_conn_validator { 'elk' :
 
 I use this elasticsearch for an ELK stack (look forward a future article!) so thats why I call it elk here.
 
+You should be able to verify the installation with the following:
 
+```shell
+curl -X GET "localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s&pretty"
+```
+
+```json
+{
+  "cluster_name" : "elk",
+  "status" : "yellow",
+  "timed_out" : false,
+  "number_of_nodes" : 1,
+  "number_of_data_nodes" : 1,
+  "active_primary_shards" : 7,
+  "active_shards" : 7,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 1,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 87.5
+}
+```
+
+> Single shard deployments will show yellow not green/
 
 ## Installing Grafana
 
