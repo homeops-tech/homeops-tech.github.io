@@ -309,7 +309,7 @@ Once we have tested the DNS server we can set it to perform resolutions with its
 
 Given i normally use raspberry pi's I can't rely on timesync working out of the box. I work around that by waiting 1minute after boot (and the network is online) to sync with an IP address of a known NTP server.
 
-```
+```puppet
  package {'ntpdate':
    ensure => present,
  }
