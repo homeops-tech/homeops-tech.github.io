@@ -3,11 +3,11 @@ layout: post
 title:  "Managing DNS with Puppet"
 date:   2020-06-06
 image: /images/posts/dns.jpg
-tags: [puppet,bind,dns,hiera,iot,how to,ha,raspberry pi,monit]
+tags: [puppet,bind,dns,hiera,iot,how to,ha,raspberry pi,monit,systemd]
 ---
 
-One of the more important things in configuration management is DNS. In home labs we often don't have DNS out of box. Some folks do use pi-holes but often don't configure custom domains.
-I often use static reservations for all my IOT devices. This means all devices on my network can use DNS names to configure each other. In this how-to I will show you how I use Puppet to setup an internal DNS domain.
+One of the more important things in configuration management is DNS. In home labs we often don't have DNS out of box. Some folks do use [pi-holes](https://www.raspberrypi.org/blog/pi-hole-raspberry-pi/) but often don't configure custom domains.
+I often use static reservations for all my IOT devices. This means all devices on my network can use DNS names to configure each otheri with those respective static'ish IPs. In this how-to I will show you how I use Puppet to setup an internal DNS domain.
 
 
 <!--more-->
@@ -27,7 +27,7 @@ I often use static reservations for all my IOT devices. This means all devices o
         </tr>
         <tr>
             <td>bind</td>
-            <td>9</td>
+            <td>9.16.1-Ubuntu</td>
             <td>ubuntu</td>
         </tr>
         <tr>
@@ -39,7 +39,7 @@ I often use static reservations for all my IOT devices. This means all devices o
 </table>
 
 
-> I run this all on a set of raspberry pis'
+> I run this all on a set of two raspberry pis'
 
 ```Puppetfile
 mod 'dns',
@@ -123,6 +123,8 @@ While this goes most of the way, there is a chicken before the egg scenerio here
 The code above is an example of configuring bind9 without the default zones.
 I'm setting this server up with forwarders as I find that media streaming and such seems to work best with the content distro networks when I use my ISP's DNS.
 
+> I'm making an anecdotal assumption here as its hard to verify this behavior but seems like the most likely conclusion
+
 ## Adding DNS Zones
 
 
@@ -152,14 +154,14 @@ I'm setting this server up with forwarders as I find that media streaming and su
 Here we create a new DNS zone , and set the nameservers to the hostname of the machine.
 
 
-> 192.168.22.222 is the address of a jekell server that runs the rendered for my website.
+> 192.168.22.222 is the address of a blob server that runs the rendered for my website before I push it to the web
 
 ## Configuring records
 
 Now that we have out DNS zones configured we can add record. While you could do this in code, I find the amount of DNS records over time mean something like yaml is better. Further it also means you can load this data set into other tools e.g. add automatic testing with icinga. Stay tuned for a future article on icingaweb2.
 
 
-First lets setup Hiera. Hiera is a data ingestion engine builtin to puppet. If you just setup your Puppet Server using my [previous article](http://www.homeops.tech/2020/02/01/Provision-Puppetserver-with-Packer/) then you need to manage hieras configuration.
+First lets setup Hiera. Hiera is a data ingestion engine builtin to puppet. If you just setup your Puppet Server using my [previous article](http://www.homeops.tech/2020/02/01/Provision-Puppetserver-with-Packer/) then you need to manage hiera's configuration.
 
 ```puppet
   class { '::hiera':
@@ -179,7 +181,7 @@ First lets setup Hiera. Hiera is a data ingestion engine builtin to puppet. If y
 
 > Bootstrapping puppet can have some chicken before the egg scenarios.
 
-This is an example configuration you can apply to your Puppet Master to configure hiera with support for a file called `dns.yaml` in your `data` directory of your control repo.
+This is an example configuration you can apply to your Puppet Master to configure hiera with support for a file called `dns.yaml` in your `data` directory of your [control repo](https://puppet.com/docs/pe/2019.8/control_repo.html).
 The most important idea here is that hiera is using yaml files that are dynamically name e.g. `%{::trusted.certname}` or statically named e.g. `dns`. For our purposes we will mostly be using static entries for our DNS records.
 
 Lets add code to pull DNS records in from hiera:
@@ -307,7 +309,7 @@ Once we have tested the DNS server we can set it to perform resolutions with its
 
 ## Systemd Hacks
 
-Given i normally use raspberry pi's I can't rely on timesync working out of the box. I work around that by waiting 1minute after boot (and the network is online) to sync with an IP address of a known NTP server.
+Given i normally use raspberry pi's I can't rely on timesync working out of the box. I work around that by waiting until after boot (and the network is online) to sync with an IP address of a known NTP server.
 
 ```puppet
  package {'ntpdate':
@@ -333,7 +335,7 @@ Given i normally use raspberry pi's I can't rely on timesync working out of the 
   Wants=network-online.target
   After=network-online.target
   [Timer]
-  OnBootSec=1min
+  OnBootSec=0
   OnUnitActiveSec=1w 
   Unit=timesync.service
   EOT
