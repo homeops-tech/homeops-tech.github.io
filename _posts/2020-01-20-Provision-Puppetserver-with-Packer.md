@@ -151,3 +151,5 @@ Once your kickstart file is ready you can load it into the virtual floppy drive.
 And there you have it after running `ESXI_PASSWORD='pa$$w0rd' packer build puppet.json` , packer will build your puppetserver and leave it running. You can then make a template or use this as a bare bones provisioning system.
 
 In future articles I'll show you how to take this Puppet server and have it build a Razor server to provision the rest of your infrastructure.
+
+You can use `/etc/hosts` configurations for the initial setup of nodes however, my suggested next guide is [Managing DNS with Puppet](http://www.homeops.tech/2020/06/06/DNS-With-Puppet/).
