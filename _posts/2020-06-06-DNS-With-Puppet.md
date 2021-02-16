@@ -310,6 +310,10 @@ Once we have tested the DNS server we can set it to perform resolutions with its
 Given i normally use raspberry pi's I can't rely on timesync working out of the box. I work around that by waiting 1minute after boot (and the network is online) to sync with an IP address of a known NTP server.
 
 ```
+ package {'ntpdate':
+   ensure => present,
+ }
+
  # Setup the users custom shell as pass through to docker
   file {"/usr/local/bin/atboot.sh":
     ensure  => file,
@@ -377,4 +381,4 @@ Feb 16 12:27:00 dns1.homeops.tech systemd[1]: Finished timesync.service.
 
 ```
 
-You should see simiilar output to this, if your systemd item fails you can monitor its failures to determine if DNS is down due to timesync issues.
+You should see similar output to this, if your systemd item fails you can monitor its failures to determine if DNS is down due to timesync issues.
