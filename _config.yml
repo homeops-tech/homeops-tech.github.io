@@ -9,10 +9,10 @@
 title: "HomeOps"
 
 # Tagline next to the site title
-tagline: "Because learning doesn't stop after 5pm"
+tagline: "because It worked on my laptop..."
 
 # A description of your site for social meta tag, search engines, and feed.xml
-description: "HomeOps is a collection of Tuturials and how tos by and for DevOps and SREs building home lab deployments"
+description: "HomeOps is a collection of Tutorials and how tos by and for DevOps and SREs building home lab deployments"
 
 # The subpath of your site, e.g. /blog, for generating urls
 baseurl:
