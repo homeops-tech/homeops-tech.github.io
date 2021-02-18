@@ -9,7 +9,7 @@
 title: "HomeOps"
 
 # Tagline next to the site title
-tagline: "because It worked on my laptop..."
+tagline: "it worked on my laptop..."
 
 # A description of your site for social meta tag, search engines, and feed.xml
 description: "HomeOps is a collection of Tutorials and how tos by and for DevOps and SREs building home lab deployments"
@@ -48,9 +48,9 @@ author_location: "Portland, Oregon"
 author_image: /images/authorimage.png
 
 # Sidebar Add banner
-banner_url: "https://www.google.com"
-banner_image: images/banner.jpg
-banner_image_alt: "Alt text"
+banner_url: "https://www.homeops.tech"
+banner_image: images/banner.gif
+banner_image_alt: "HomeOps"
 
 # Social links in the site footer
 twitter_url: "https://twitter.com/acidprime"
