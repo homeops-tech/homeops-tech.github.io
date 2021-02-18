@@ -48,8 +48,8 @@ author_location: "Portland, Oregon"
 author_image: /images/authorimage.png
 
 # Sidebar Add banner
-banner_url: "https://www.homeops.tech"
-banner_image: images/banner.gif
+banner_url: "http://www.homeops.tech"
+banner_image: images/banner.png
 banner_image_alt: "HomeOps"
 
 # Social links in the site footer
