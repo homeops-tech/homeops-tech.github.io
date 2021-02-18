@@ -7,7 +7,7 @@ tags: [puppet,bind,dns,hiera,iot,how to,ha,raspberry pi,monit,systemd]
 ---
 
 One of the more important things in configuration management is DNS. In home labs we often don't have DNS out of box. Some folks do use [pi-holes](https://www.raspberrypi.org/blog/pi-hole-raspberry-pi/) but often don't configure custom domains.
-I often use static reservations for all my IOT devices. This means all devices on my network can use DNS names to configure and talk to each other with those respective static'ish IPs. In this how-to I will show you how I use Puppet to setup an internal DNS domain.
+I often use static reservations for all my IOT devices. This means all devices on my network can use DNS names to configure and talk to each other with those respective static'ish IPs. In this post I will show you how I use Puppet to setup an internal DNS domain.
 
 
 <!--more-->
