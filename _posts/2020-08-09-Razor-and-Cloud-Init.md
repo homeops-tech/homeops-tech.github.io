@@ -26,7 +26,7 @@ modern tools to the mix makes it work quite well. Its lack of use can also be at
         </tr>
         <tr>
             <td>centos</td>
-            <td>7</td>
+            <td>7.9.2009</td>
             <td>centos</td>
         </tr>
     </tbody>
