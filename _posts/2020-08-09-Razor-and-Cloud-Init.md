@@ -231,7 +231,7 @@ Once you understand the individual building blocks of `tags`,`repo` and `broker`
 
 In the examples above, we are using our two tags to create one dynamic policy and one static policy. The `install_debian_on_virtual` will run 100 times on as many VMs as we throw at it. The `proxmox_install` will run once. The hostnames on the virtual machines will be dynamic with `${id}` being interpolated into the current node number. The proxmox hostname is static.
 
-And with that we can now boot any new VM in proxmox right to the install screen. Further when I start my Intel NUC up it does the same.
+And with that we can now boot any new VM in proxmox right to the install screen. Further when I start my Intel NUC up it does the same. Wait for it...
 
 ![PXE](/images/posts/pxe.gif)
 
