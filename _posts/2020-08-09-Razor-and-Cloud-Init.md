@@ -321,7 +321,7 @@ So here is what a bare bones cloud-init configuration can look like
        dsmode: local
 ```
 
-So as you can see , this cloud-init handles the the basics of creating a backup account, and then bootstraps puppet. The `csr_attributes` can be use to then allow autosigning and classification of the node in puppet. I enable the ConfigDrive data source here as `proxmox` actually supports cloud-init out of the box. This allows an ISO image to contain extra node specific data such as the IP address of the node. I will be expierementing with using the SD card slow on my servers to bootstrap some of this local data from my servers in the future.
+So as you can see , this cloud-init handles the the basics of creating a backup account, and then bootstraps puppet. The `csr_attributes` can be use to then allow autosigning and classification of the node in puppet. I enable the ConfigDrive data source here as `proxmox` actually supports cloud-init out of the box. This allows an ISO image to contain extra node specific data such as the IP address of the node. I will be expierementing with using the SD card slot on my servers to bootstrap some of this local data from my servers in the future.
 
 > Again a little hand wavy here with the csr_attributes as they can't be node specific. Thats v2 and can be fixed with cloud-drives and such.
 
