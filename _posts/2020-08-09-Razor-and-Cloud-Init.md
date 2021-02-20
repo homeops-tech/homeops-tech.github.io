@@ -366,3 +366,6 @@ This little script is used to remove the volume group as its name conflicts give
 The new systemd item is simply a runner for the postinstall script that calls cloud-init
 
 > Cloud-init seems well documented in some ways and not in others. My initial assumption was that I would not have to run these commands if I simply enabled the systemd items for cloud-init. However in testing that didn't work and so the script is essentially running cloud-init.
+
+
+The updated task and the custom broker above are essentially modified versions of the ones you find [here](https://github.com/acidprime/puppet-razor/tree/master/files). I might add these to my fork in the future, but at the moment as they are site specific I add them to my profile modules' files directory.
