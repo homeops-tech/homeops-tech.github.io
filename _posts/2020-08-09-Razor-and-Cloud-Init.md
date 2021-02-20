@@ -329,7 +329,7 @@ So as you can see , this cloud-init handles the the basics of creating a backup 
 
 {% gist e6e8c674e192ca7fa6d2be7b69ef2998 install.erb %}
 
-You can check out the [gist]({% gist 679c5fd0c32ac40c680d09d5b1aa5b63 Dockerfile %}) for the configuration yaml for the broker. However lets take a look at what the `install.erb` script looks like. This script is essentially the payload for the cloud-init process. It will create a cloud-config and then run the final boot steps for cloud init. Assuming everything was successful it will phone home to razor and mark the node as installed. This by the way showcases one of the powers of razor,
+You can check out the [gist](https://gist.github.com/acidprime/679c5fd0c32ac40c680d09d5b1aa5b63) for the configuration yaml for the broker. However lets take a look at what the `install.erb` script looks like. This script is essentially the payload for the cloud-init process. It will create a cloud-config and then run the final boot steps for cloud init. Assuming everything was successful it will phone home to razor and mark the node as installed. This by the way showcases one of the powers of razor,
 which is to interpolate ruby templates on files by adding metadata and node data dyanmically.
 
 
