@@ -32,6 +32,8 @@ modern tools to the mix makes it work quite well. Its lack of use can also be at
     </tbody>
 </table>
 
+> I install razor side by side my Puppet server which is on the Centos Box
+
   
   `Puppetfile`
   
