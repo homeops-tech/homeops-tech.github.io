@@ -42,6 +42,18 @@ mod 'razor',
   :git => 'https://github.com/acidprime/puppet-razor.git',
   :ref => 'master'
 
+mod 'wget',
+  :git => 'https://github.com/voxpupuli/puppet-wget.git',
+  :ref => 'v2.0.1'
+
+mod 'java',
+  :git => 'https://github.com/puppetlabs/puppetlabs-java.git',
+  :ref => 'v6.5.0'
+
+mod 'postgresql',
+  :git => 'https://github.com/puppetlabs/puppetlabs-postgresql.git',
+  :ref => 'v6.5.0'
+ 
 ```
 
 
