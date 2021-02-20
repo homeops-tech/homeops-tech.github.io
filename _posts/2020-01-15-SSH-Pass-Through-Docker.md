@@ -6,8 +6,6 @@ image: /images/posts/docker.jpg
 tags: [puppet,devops,docker,vagrant,virtualbox,ubuntu,gdm,ssh,how to]
 ---
 
-![Links](/images/posts/links.png)
-
 I have always liked links. When I used to make Cocoa Apps for enterprise customers I liked adding things like Webkit to load cool HTML links and work with custom URLs. There is something about making something pop-up on screen from an otherwise static application that seems fancy to me. Sometimes I need to setup an environment (often linux) that needs a user to interact with a docker container. While docker exec is very similar to ssh, it lacks a
 URL structure to integrate a website and docker together. In this how-to I will show you how to add `ssh://` links to Ubuntu and pass through those connections to docker.
 
