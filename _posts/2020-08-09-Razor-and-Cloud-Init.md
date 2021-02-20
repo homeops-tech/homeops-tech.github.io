@@ -229,7 +229,7 @@ The `razor::broker` is copying our custom broker from our module, `profile` to i
 
 Once you understand the individual building blocks of `tags`,`repo` and `broker` a policy should help solidify how they fit together. Simply put a policy is the only actionable item of the lot. Its code references the tag to line up the matching node with the correct repo and broker.
 
-In the examples above, we are using our two tags to create one dynamic policy and one static policy. The `install_debian_on_virtual` will run 100 times on as many VMs as we throw at it. The `proxmox_install` will run once. The hostnames on the virtual machines will be static with `${id}` being interpolated into the current node number.
+In the examples above, we are using our two tags to create one dynamic policy and one static policy. The `install_debian_on_virtual` will run 100 times on as many VMs as we throw at it. The `proxmox_install` will run once. The hostnames on the virtual machines will be dynamic with `${id}` being interpolated into the current node number. The proxmox hostname is static.
 
 And with that we can now boot any new VM in proxmox right to the install screen. Further when I start my Intel NUC up it does the same.
 
