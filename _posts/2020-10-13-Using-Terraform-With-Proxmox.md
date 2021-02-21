@@ -7,7 +7,7 @@ tags: [terraform,proxmox,cloud-init]
 ---
 
 In my previous post on using [Razor with Cloud Init](http://www.homeops.tech/2020/07/15/Razor-and-Cloud-Init/) I was able to get newly created VMs to PXE boot to razor and automatically install debian. This allows me to quickly deploy VMs for testing and hosting services. However to create these VMs still required clicking though multiple pages of settings in the Proxmox UI. Given I use terraform so much as work I wanted to use it in my home lab. I this quick post I will show you some example
-code to provision a VM in proxmox with terraform.
+code to provision a VM in proxmox with terraform. New to Terraform, checkout [Learn](https://learn.hashicorp.com/terraform).
 
 <!--more-->
 
