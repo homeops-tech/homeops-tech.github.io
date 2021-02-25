@@ -132,4 +132,4 @@ We can do that with an `refresh` in Puppet. On the DHCP server (or any node) we 
    }
 ```
 
-Now when I add a new node to my DHCP server, the same puppet run will trigger the script to run. This happen because the local YAML file's content will change and puppet will issue a refresh notification to the exec.
+Now when I add a new node to my DHCP server, the same puppet run will trigger the script to run. This happens because the local YAML file's content will change and puppet will issue a refresh notification to the exec.
