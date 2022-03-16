@@ -3,7 +3,7 @@ layout: post
 title:  "Using Synology as a ZeroTier Bridge"
 date:   2020-07-15
 image: /images/posts/network.jpg
-tags: [synology,zero tier,dsm]
+tags: [synology,zero tier,dsm,network]
 ---
 
 I was introduced to [Zero tier](https://www.zerotier.com/) a few years ago. I find it pretty solid and the free plan works well as a sort of reverse NAT style VPN'esk solution.  Each node gets a multi homed IP that's always available. This means I can ssh into my laptop no matter where it is, or have it backup to an internal server consistently. You don't have to open any ports up as your routing traffic through their servers. Additionally you don't need a static IP to make this work.
